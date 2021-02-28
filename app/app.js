@@ -1,152 +1,171 @@
-let shopitem = [
-    'bag',
-    'banana',
-    'bathroom',
-    'boots',
-    'breakfast',
-    'bubblegum',
-    'chair',
-    'cthulhu' ,
-    'dog-duck',
-    'dragon',
-    'pen',
-    'pet-sweep',
-    'scissors',
-    'shark',
-    'sweep' ,
-    'tauntaun',
-    'unicorn',
-    'usb',
-    'water-can',
-    'wine-glass'
-  ];
-  let buttonShowResult = document.getElementById('show_result');
-  let ulShowResult = document.getElementById('show_data')
-let imageSection = document.getElementById( 'results' );
-let leftImage = document.getElementById( 'leftImage' );
-let centertImage = document.getElementById( 'cinterImage' );
-let rightImage = document.getElementById( 'rightImage' );
+'use strict'
+
+// all needed varibales
+const clickingCounter = 23;
+let leftmgIndex = 0;
+let rightImgIndex = 0;
+let centerImgIndex = 0;
+let shopitem = ['bag.jpg', 'banana.jpg', 'bathroom.jpg', 'boots.jpg', 'breakfast.jpg', 'bubblegum.jpg', 'chair.jpg', 'cthulhu.jpg',
+  'dog-duck.jpg', 'dragon.jpg', 'pen.jpg', 'pet-sweep.jpg', 'scissors.jpg', 'shark.jpg', 'sweep.png', 'tauntaun.jpg', 'unicorn.jpg',
+  'usb.gif', 'water-can.jpg', 'wine-glass.jpg'];
+let ViewResults = document.getElementById('View_Results');
+let ulList = document.getElementById('data')
+let imageSection = document.getElementById('Images');
+let leftImage = document.getElementById('leftImage');
+let centertImage = document.getElementById('centerImage');
+let rightImage = document.getElementById('rightImage');
+// end of varivale declaration.
 
 
-let leftGoatIndex = 0;
-let rightGoatIndex = 0;
-let cinterGoatIndex = 0;
 
 
-const clickCounter = 23;
+// create constructor
+let Img = function (name) {
+  this.name = name;
+  this.image = `./img/${name}`;
+  this.clicks = 0;
+  this.show = 0;
+  Img.all.push(this);
+}
+Img.all = [];
+Img.counter = 0;
+// end of counstrctor
 
-function item( name ) {
-    this.name = name;
-    this.image = `./img/${name}.jpg`;
-    this.clicks = 0;
-    this.show = 0;
-    item.all.push( this );
+
+
+
+// add images for array
+function addImgesToArray() {
+  for (let i = 0; i < shopitem.length; i++) {
+    new Img(shopitem[i]);
   }
-  
-  item.all = [];
-  item.counter = 0;
-  
-  for( let i = 0; i < shopitem.length; i++ ) {
-    new item( shopitem[i] );
+
+};//end of addImgesToArray
+
+
+
+
+// to generate randoum number
+function genrateRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}; // end of genrateRandomNumber
+
+
+
+
+// adding event lestiner to images
+function addingEventListneToImages() {
+  ViewResults.addEventListener('click', appndingDataToUl);
+  imageSection.addEventListener('click', clickingOnImageEvent);
+};// end of addingEventListneToImages
+
+
+
+
+
+//addding data to url
+function appndingDataToUl(event) {
+  ulList.style.display = 'block';
+  for (let y = 0; y < Img.all.length; y++) {
+    const liElement = document.createElement('li');
+    ulList.appendChild(liElement);
+    liElement.textContent = `${Img.all[y].name} had ${Img.all[y].clicks} votes, and was seen ${Img.all[y].show} times.`;
   }
-  
-  function renderNewGoat() {
-    buttonShowResult.style.display='none';
-    ulShowResult.style.display='none';
-    let leftIndex = randomNumber( 0, item.all.length - 1 );
-    leftImage.src = item.all[leftIndex].image;
-    leftImage.alt = item.all[leftIndex].name;
-    leftGoatIndex = leftIndex;
+  ViewResults.removeEventListener('click', appndingDataToUl);
+  imageSection.removeEventListener('click', clickingOnImageEvent);
+}; // end of appndingDataToUl
 
-    
-  
-    let rightIndex;
-    do {
-      rightIndex = randomNumber( 0, item.all.length - 1 );
-    } while( leftIndex == rightIndex );
 
-   
-    
-    rightImage.src = item.all[rightIndex].image;
-    rightImage.alt = item.all[rightIndex].name;
-    rightGoatIndex = rightIndex;
-    
-    let centertIndex;
-do {
-    centertIndex = randomNumber( 0, item.all.length - 1 );
-    } while( leftIndex == centertIndex || rightIndex == centertIndex);
 
-    centertImage.src = item.all[centertIndex].image;
-    centertImage.alt = item.all[centertIndex].name;
-    cinterGoatIndex = rightIndex;
-  
-    item.all[leftIndex].show++;
-    item.all[rightIndex].show++;
-    item.all[centertIndex].show++;
 
-  
-  
-    // rightImage.src = item.all[0].image;
-  }
-  
-  function handelClick( event ) {
- 
-    if( item.counter <= clickCounter ) {
-      
-      const clickedElement = event.target;
-      if( clickedElement.id == 'leftImage' || clickedElement.id == 'rightImage' || clickedElement.id =='cinterImage') {
-        if( clickedElement.id == 'leftImage' ) {
-          item.all[leftGoatIndex].clicks++;
-        
-        }
-  
-        if( clickedElement.id == 'rightImage' ) {
-          item.all[rightGoatIndex].clicks++;
-         
 
-        }
-        
 
-        if( clickedElement.id == 'cinterImage' ) {
-            item.all[cinterGoatIndex].clicks++;
-        
+// add images to html
+function renderingImages() {
+  ViewResults.style.display = 'none';
+  ulList.style.display = 'none';
+  let rightIndex;
+  let centertIndex;
 
-          }
-  
-        item.counter++;
-        renderNewGoat();
-  
-        console.log( item.all );
+
+  let leftIndex = genrateRandomNumber(0, Img.all.length - 1);
+  leftImage.src = Img.all[leftIndex].image;
+  leftImage.alt = Img.all[leftIndex].name;
+  leftmgIndex = leftIndex;
+
+
+  do {
+    rightIndex = genrateRandomNumber(0, Img.all.length - 1);
+  } while (leftIndex == rightIndex);
+
+
+  rightImage.src = Img.all[rightIndex].image;
+  rightImage.alt = Img.all[rightIndex].name;
+  rightImgIndex = rightIndex;
+
+  do {
+    centertIndex = genrateRandomNumber(0, Img.all.length - 1);
+  } while (leftIndex == centertIndex || rightIndex == centertIndex);
+
+  centertImage.src = Img.all[centertIndex].image;
+  centertImage.alt = Img.all[centertIndex].name;
+  centerImgIndex = rightIndex;
+
+  Img.all[leftIndex].show++;
+  Img.all[rightIndex].show++;
+  Img.all[centertIndex].show++;
+
+};//end of renderingImages
+
+
+
+
+
+
+
+//function for knows how is picture clicking on 
+function clickingOnImageEvent(event) {
+
+  if (Img.counter <= clickingCounter) {
+
+    const clickedElement = event.target;
+    if (clickedElement.id == 'leftImage' || clickedElement.id == 'rightImage' || clickedElement.id == 'centerImage') {
+      if (clickedElement.id == 'leftImage') {
+        Img.all[leftmgIndex].clicks++;
+
       }
-    }else
-    {
-        buttonShowResult.style.display='block';
+
+      if (clickedElement.id == 'rightImage') {
+        Img.all[rightImgIndex].clicks++;
+
+
+      }
+
+
+      if (clickedElement.id == 'centerImage') {
+        Img.all[centerImgIndex].clicks++;
+
+
+      }
+
+      Img.counter++;
+      renderingImages();
+
     }
-    
+  } else {
+    ViewResults.style.display = 'block';
   }
-  function showData(event)
-  {
-    ulShowResult.style.display='block';
-    for(let y=0;y<item.all.length;y++){
-        const liElement = document.createElement('li');
-        ulShowResult.appendChild(liElement);
-        liElement.textContent=item.all[y].name+' had '+ item.all[y].clicks+ ' votes, and was seen '+item.all[y].show+' times.'
-    }
-    buttonShowResult.removeEventListener('click',showData,true);
-  
-  
-    imageSection.removeEventListener( 'click', handelClick,true );
-  }
-  buttonShowResult.addEventListener('click',showData);
-  
-  
-  imageSection.addEventListener( 'click', handelClick );
- 
-  console.log( 'ffdgfg',item.all );
-  
-  // Helper function
-  function randomNumber( min, max ) {
-    return Math.floor( Math.random() * ( max - min + 1 ) ) + min;
-  }
-  
-  renderNewGoat();
+
+};//end of clickingOnImageEvent
+
+
+
+
+
+
+
+
+
+addImgesToArray();
+addingEventListneToImages();
+renderingImages();
