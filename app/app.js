@@ -14,6 +14,10 @@ let imageSection = document.getElementById('Images');
 let leftImage = document.getElementById('leftImage');
 let centertImage = document.getElementById('centerImage');
 let rightImage = document.getElementById('rightImage');
+let votesImg = [];
+let shownImg = [];
+let previousIndex = []
+let colorChart=[]
 // end of varivale declaration.
 
 
@@ -38,6 +42,7 @@ Img.counter = 0;
 function addImgesToArray() {
   for (let i = 0; i < shopitem.length; i++) {
     new Img(shopitem[i]);
+    colorChart.push(random_rgba());
   }
 
 };//end of addImgesToArray
@@ -65,6 +70,9 @@ function addingEventListneToImages() {
 
 //addding data to url
 function appndingDataToUl(event) {
+
+  renderChart();
+
   ulList.style.display = 'block';
   for (let y = 0; y < Img.all.length; y++) {
     const liElement = document.createElement('li');
@@ -86,17 +94,30 @@ function renderingImages() {
   ulList.style.display = 'none';
   let rightIndex;
   let centertIndex;
+  let leftIndex;
 
 
-  let leftIndex = genrateRandomNumber(0, Img.all.length - 1);
+  do {
+    leftIndex = genrateRandomNumber(0, Img.all.length - 1);
+
+  } while (previousIndex.indexOf(leftIndex) != -1);
+
   leftImage.src = Img.all[leftIndex].image;
   leftImage.alt = Img.all[leftIndex].name;
   leftmgIndex = leftIndex;
 
 
+  // let leftIndex = genrateRandomNumber(0, Img.all.length - 1);
+  // previousIndex[0]=leftIndex;
+  // leftImage.src = Img.all[leftIndex].image;
+  // leftImage.alt = Img.all[leftIndex].name;
+  // leftmgIndex = leftIndex;
+
+
   do {
     rightIndex = genrateRandomNumber(0, Img.all.length - 1);
-  } while (leftIndex == rightIndex);
+
+  } while (leftIndex == rightIndex || previousIndex.indexOf(rightIndex) != -1);
 
 
   rightImage.src = Img.all[rightIndex].image;
@@ -105,12 +126,15 @@ function renderingImages() {
 
   do {
     centertIndex = genrateRandomNumber(0, Img.all.length - 1);
-  } while (leftIndex == centertIndex || rightIndex == centertIndex);
+
+  } while (leftIndex == centertIndex || rightIndex == centertIndex || previousIndex.indexOf(centertIndex) != -1);
 
   centertImage.src = Img.all[centertIndex].image;
   centertImage.alt = Img.all[centertIndex].name;
   centerImgIndex = rightIndex;
-
+  previousIndex[1] = rightIndex;
+  previousIndex[2] = centertIndex;
+  previousIndex[0] = leftIndex;
   Img.all[leftIndex].show++;
   Img.all[rightIndex].show++;
   Img.all[centertIndex].show++;
@@ -154,12 +178,67 @@ function clickingOnImageEvent(event) {
     }
   } else {
     ViewResults.style.display = 'block';
+
+    for (let i = 0; i < Img.all.length; i++) {
+      votesImg.push(Img.all[i].clicks);
+      shownImg.push(Img.all[i].show);
+    }
+
+
+
   }
 
 };//end of clickingOnImageEvent
 
 
+//renderChart to add Chart to html
+function renderChart() {
 
+
+  var ctx = document.getElementById('myChart').getContext('2d');
+  var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: shopitem,
+      datasets: [{
+        label: '# of Votes',
+        data: votesImg,
+        backgroundColor:colorChart,
+        borderColor: colorChart,
+        borderWidth: 3
+      },
+
+
+      {
+        label: '# of Shown',
+        data: shownImg,
+        backgroundColor:colorChart,
+        borderColor: colorChart,
+        borderWidth: 1
+      }
+
+      ]
+    },
+    options: {
+      scales: {
+        yAxes: [{
+          ticks: {
+            beginAtZero: true
+          }
+        }]
+      }
+    }
+  });
+};//end of renderChart
+
+
+
+
+// to generate color for charts
+function random_rgba() {
+  var o = Math.round, r = Math.random, s = 255;
+  return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
+};//end of random_rgba
 
 
 
@@ -169,3 +248,13 @@ function clickingOnImageEvent(event) {
 addImgesToArray();
 addingEventListneToImages();
 renderingImages();
+
+
+
+
+
+
+
+
+
+
