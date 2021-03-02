@@ -25,11 +25,12 @@ let colorChart=[]
 
 // create constructor
 let Img = function (name) {
-  this.name = name;
+  this.name = name.split('.')[0];
   this.image = `./img/${name}`;
   this.clicks = 0;
   this.show = 0;
   Img.all.push(this);
+  localStorage.setItem('allData',JSON.stringify(Img.all));
 }
 Img.all = [];
 Img.counter = 0;
@@ -40,10 +41,17 @@ Img.counter = 0;
 
 // add images for array
 function addImgesToArray() {
-  for (let i = 0; i < shopitem.length; i++) {
-    new Img(shopitem[i]);
-    colorChart.push(random_rgba());
+
+  if( JSON.parse(localStorage.getItem('allData')))
+  {
+    Img.all=JSON.parse(localStorage.getItem('allData'));
+  }else{
+    for (let i = 0; i < shopitem.length; i++) {
+      new Img(shopitem[i]);
+      colorChart.push(random_rgba());
+    }
   }
+  
 
 };//end of addImgesToArray
 
@@ -100,7 +108,8 @@ function renderingImages() {
   do {
     leftIndex = genrateRandomNumber(0, Img.all.length - 1);
 
-  } while (previousIndex.indexOf(leftIndex) != -1);
+  // } while (previousIndex.indexOf(leftIndex) != -1);
+  } while (checkingDublicatingImages(leftIndex));
 
   leftImage.src = Img.all[leftIndex].image;
   leftImage.alt = Img.all[leftIndex].name;
@@ -117,7 +126,8 @@ function renderingImages() {
   do {
     rightIndex = genrateRandomNumber(0, Img.all.length - 1);
 
-  } while (leftIndex == rightIndex || previousIndex.indexOf(rightIndex) != -1);
+  // } while (leftIndex == rightIndex || previousIndex.indexOf(rightIndex) != -1);
+  } while (leftIndex == rightIndex ||checkingDublicatingImages(rightIndex));
 
 
   rightImage.src = Img.all[rightIndex].image;
@@ -127,7 +137,8 @@ function renderingImages() {
   do {
     centertIndex = genrateRandomNumber(0, Img.all.length - 1);
 
-  } while (leftIndex == centertIndex || rightIndex == centertIndex || previousIndex.indexOf(centertIndex) != -1);
+  // } while (leftIndex == centertIndex || rightIndex == centertIndex || previousIndex.indexOf(centertIndex) != -1);
+  } while (leftIndex == centertIndex || rightIndex == centertIndex || checkingDublicatingImages(centertIndex));
 
   centertImage.src = Img.all[centertIndex].image;
   centertImage.alt = Img.all[centertIndex].name;
@@ -184,11 +195,19 @@ function clickingOnImageEvent(event) {
       shownImg.push(Img.all[i].show);
     }
 
-
+    localStorage.setItem('allData',JSON.stringify(Img.all));
 
   }
 
 };//end of clickingOnImageEvent
+
+
+
+//for deleteing exenstion form images
+function deleteExtention(age) {
+  console.log(age.split('.')[0])
+  return age.split('.')[0];
+};//end of deleteExtention
 
 
 //renderChart to add Chart to html
@@ -199,7 +218,7 @@ function renderChart() {
   var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: shopitem,
+      labels: shopitem.map(deleteExtention),
       datasets: [{
         label: '# of Votes',
         data: votesImg,
@@ -240,14 +259,32 @@ function random_rgba() {
   return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',' + r().toFixed(1) + ')';
 };//end of random_rgba
 
-
-
+// checkingDublicatingImages checking if thta image repeted again
+function checkingDublicatingImages(number)
+{
+  for(let i=0 ; i<previousIndex.length;i++)
+  {
+    if(previousIndex[i]==number)
+    {
+      return true;
+    }
+  }
+  return false
+};//end of checkingDublicatingImages
 
 
 
 addImgesToArray();
 addingEventListneToImages();
 renderingImages();
+
+
+
+
+
+
+
+
 
 
 
